@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Bell, Menu, Search, Shield } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useUI } from '../context/UIContext'
 
@@ -17,12 +18,25 @@ function formatDateTime(date) {
 function Topbar() {
   const { user } = useAuth()
   const { setMobileSidebarOpen } = useUI()
+  const navigate = useNavigate()
   const [now, setNow] = useState(new Date())
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 60000)
     return () => clearInterval(timer)
   }, [])
+
+  useEffect(() => {
+    const handleShortcut = (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        navigate('/search')
+      }
+    }
+
+    window.addEventListener('keydown', handleShortcut)
+    return () => window.removeEventListener('keydown', handleShortcut)
+  }, [navigate])
 
   return (
     <header className="topbar">
@@ -36,11 +50,11 @@ function Topbar() {
       </div>
 
       <div className="topbar-meta">
-        <div className="search-shortcut">
+        <button type="button" className="search-shortcut" onClick={() => navigate('/search')} aria-label="Open IOC search">
           <Search size={14} />
           <span>Search</span>
           <kbd>Ctrl K</kbd>
-        </div>
+        </button>
         <div className="user-chip">
           <Shield size={16} />
           <span>{user?.full_name}</span>

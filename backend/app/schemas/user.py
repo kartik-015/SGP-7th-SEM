@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field
 
 
 EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
@@ -10,28 +10,16 @@ EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 class UserCreate(BaseModel):
     full_name: str = Field(min_length=2, max_length=120)
-    email: str
+    email: str = Field(min_length=5, max_length=320)
     password: str = Field(min_length=8, max_length=128)
     role: str = Field(default="Analyst")
 
-    @field_validator("email")
-    @classmethod
-    def validate_email(cls, value: str) -> str:
-        if not EMAIL_PATTERN.match(value):
-            raise ValueError("Invalid email format")
-        return value
+
 
 
 class UserLogin(BaseModel):
-    email: str
+    email: str 
     password: str
-
-    @field_validator("email")
-    @classmethod
-    def validate_email(cls, value: str) -> str:
-        if not EMAIL_PATTERN.match(value):
-            raise ValueError("Invalid email format")
-        return value
 
 
 class UserRead(BaseModel):

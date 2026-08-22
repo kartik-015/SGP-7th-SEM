@@ -13,10 +13,12 @@ function ThreatExplorerPage() {
   const [rows, setRows] = useState([])
   const [filters, setFilters] = useState({ severity: '', ioc_type: '', source: '', search: '' })
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [selectedThreat, setSelectedThreat] = useState(null)
 
   const fetchRows = async (nextFilters = filters) => {
     setLoading(true)
+    setError('')
     const params = {}
     Object.entries(nextFilters).forEach(([key, value]) => {
       if (value) params[key] = value
@@ -27,6 +29,8 @@ function ThreatExplorerPage() {
       if (data.length === 0) {
         toast.info('No threats found for the current filters.')
       }
+    } catch (requestError) {
+      setError(requestError?.response?.data?.detail || 'Threats could not be loaded. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -104,6 +108,7 @@ function ThreatExplorerPage() {
         </motion.div>
 
         {loading ? <div className="table-skeleton"><LoadingSkeleton lines={5} height={20} /></div> : null}
+        {error ? <div className="form-alert">{error}</div> : null}
 
         <DataTable
           columns={columns}

@@ -25,7 +25,7 @@ function Sidebar() {
       </button>
       <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileSidebarOpen ? 'mobile-open' : ''}`}>
         <div className="sidebar-top">
-          <div className="brand-block">
+          <button type="button" className="brand-block" onClick={() => navigate('/dashboard')} aria-label="Go to Dashboard">
             <div className="brand-mark">CI</div>
             {!collapsed && (
               <div>
@@ -33,7 +33,7 @@ function Sidebar() {
                 <div className="brand-subtitle">Threat Operations Platform</div>
               </div>
             )}
-          </div>
+          </button>
           <button type="button" className="collapse-button" onClick={() => setSidebarCollapsed((value) => !value)} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
             {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           </button>

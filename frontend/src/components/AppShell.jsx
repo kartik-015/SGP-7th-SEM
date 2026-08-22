@@ -1,11 +1,12 @@
 import React from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Outlet, useLocation } from 'react-router-dom'
+import { useLocation, useOutlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import Topbar from './Topbar'
 
 function AppShell() {
   const location = useLocation()
+  const outlet = useOutlet()
 
   return (
     <div className="app-shell">
@@ -22,7 +23,7 @@ function AppShell() {
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.18 }}
             >
-              <Outlet />
+              {outlet}
             </motion.div>
           </AnimatePresence>
         </main>

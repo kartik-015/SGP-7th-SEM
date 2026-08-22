@@ -11,12 +11,19 @@ function AlertsPage() {
   const toast = useToast()
   const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   const loadAlerts = async () => {
     setLoading(true)
-    const { data } = await api.get('/alerts')
-    setAlerts(data)
-    setLoading(false)
+    setError('')
+    try {
+      const { data } = await api.get('/alerts')
+      setAlerts(data)
+    } catch (requestError) {
+      setError(requestError?.response?.data?.detail || 'Alerts could not be loaded. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -45,6 +52,7 @@ function AlertsPage() {
         </div>
 
         {loading ? <LoadingSkeleton lines={6} height={20} /> : null}
+        {error ? <div className="form-alert">{error}</div> : null}
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.18 }}>
           <DataTable

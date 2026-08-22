@@ -17,8 +17,11 @@ function DashboardPage() {
   const [sourceData, setSourceData] = useState([])
   const [threats, setThreats] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
+    let active = true
+
     Promise.all([
       api.get('/dashboard/stats'),
       api.get('/dashboard/severity-distribution'),
@@ -27,13 +30,22 @@ function DashboardPage() {
       api.get('/dashboard/sources'),
       api.get('/threats'),
     ]).then(([statsRes, severityRes, typeRes, activityRes, sourceRes, threatsRes]) => {
+      if (!active) return
       setStats(statsRes.data)
       setSeverityData(severityRes.data)
       setIocTypeData(typeRes.data)
       setActivityData(activityRes.data)
       setSourceData(sourceRes.data)
       setThreats(threatsRes.data.slice(0, 8))
-    }).finally(() => setLoading(false))
+    }).catch(() => {
+      if (active) setError('Dashboard data could not be loaded. Please refresh and try again.')
+    }).finally(() => {
+      if (active) setLoading(false)
+    })
+
+    return () => {
+      active = false
+    }
   }, [])
 
   const severityChart = useMemo(
@@ -63,6 +75,8 @@ function DashboardPage() {
           <LoadingSkeleton className="stat-skeleton" lines={1} height={82} />
         </section>
       ) : null}
+
+      {error ? <div className="form-alert">{error}</div> : null}
 
       <section className="stats-grid">
         <StatCard title="Total IOCs" value={stats ? stats.total_iocs.toLocaleString() : '...'} helper="Normalized indicators in the database" accent="#60a5fa" />
