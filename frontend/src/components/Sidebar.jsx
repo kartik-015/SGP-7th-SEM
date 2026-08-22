@@ -1,0 +1,89 @@
+import React from 'react'
+import { Activity, AlertTriangle, ChevronLeft, ChevronRight, FileSearch, LayoutDashboard, LogOut, Shield, UserRound } from 'lucide-react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { useUI } from '../context/UIContext'
+
+const navItems = [
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/threats', label: 'Threat Explorer', icon: Shield },
+  { to: '/search', label: 'IOC Search', icon: FileSearch },
+  { to: '/alerts', label: 'Alerts', icon: AlertTriangle },
+  { to: '/profile', label: 'Profile', icon: UserRound },
+]
+
+function Sidebar() {
+  const { logout, user } = useAuth()
+  const { sidebarCollapsed, setSidebarCollapsed, mobileSidebarOpen, setMobileSidebarOpen } = useUI()
+  const navigate = useNavigate()
+  const collapsed = sidebarCollapsed
+
+  return (
+    <>
+      <button type="button" className="mobile-sidebar-toggle" onClick={() => setMobileSidebarOpen(true)} aria-label="Open navigation">
+        <LayoutDashboard size={18} />
+      </button>
+      <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileSidebarOpen ? 'mobile-open' : ''}`}>
+        <div className="sidebar-top">
+          <div className="brand-block">
+            <div className="brand-mark">CI</div>
+            {!collapsed && (
+              <div>
+                <div className="brand-title">CYBER INTELLIGENCE</div>
+                <div className="brand-subtitle">Threat Operations Platform</div>
+              </div>
+            )}
+          </div>
+          <button type="button" className="collapse-button" onClick={() => setSidebarCollapsed((value) => !value)} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
+            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
+        </div>
+
+        <nav className="sidebar-nav">
+          {navItems.map((item) => {
+            const Icon = item.icon
+            return (
+              <NavLink key={item.to} to={item.to} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={() => setMobileSidebarOpen(false)}>
+                <Icon size={18} />
+                {!collapsed && <span>{item.label}</span>}
+              </NavLink>
+            )
+          })}
+        </nav>
+
+        {user?.role === 'Administrator' && !collapsed && (
+          <div className="sidebar-admin-note">
+            <Activity size={16} />
+            <span>Admin access available in Phase 2</span>
+          </div>
+        )}
+
+        <div className="sidebar-footer">
+          <div className="sidebar-user">
+            <div className="avatar">{user?.full_name?.slice(0, 1) || 'U'}</div>
+            {!collapsed && (
+              <div>
+                <strong>{user?.full_name}</strong>
+                <span>{user?.role}</span>
+              </div>
+            )}
+          </div>
+          <button
+            type="button"
+            className="logout-button"
+            onClick={() => {
+              logout()
+              navigate('/login')
+            }}
+          >
+            <LogOut size={18} />
+            {!collapsed && 'Logout'}
+          </button>
+        </div>
+      </aside>
+      {mobileSidebarOpen ? <button type="button" className="sidebar-overlay" onClick={() => setMobileSidebarOpen(false)} aria-label="Close navigation" /> : null}
+    </>
+  )
+}
+
+export default Sidebar

@@ -1,0 +1,50 @@
+from __future__ import annotations
+
+import re
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+
+EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+
+class UserCreate(BaseModel):
+    full_name: str = Field(min_length=2, max_length=120)
+    email: str
+    password: str = Field(min_length=8, max_length=128)
+    role: str = Field(default="Analyst")
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, value: str) -> str:
+        if not EMAIL_PATTERN.match(value):
+            raise ValueError("Invalid email format")
+        return value
+
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, value: str) -> str:
+        if not EMAIL_PATTERN.match(value):
+            raise ValueError("Invalid email format")
+        return value
+
+
+class UserRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    full_name: str
+    email: str
+    role: str
+    is_active: bool
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserRead
