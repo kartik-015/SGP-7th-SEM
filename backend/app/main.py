@@ -46,3 +46,8 @@ app.include_router(alerts_router)
 @app.get("/")
 def root():
     return {"message": "Cyber Threat Intelligence Dashboard API is running."}
+
+
+@app.get("/health", tags=["Health"])
+def health():
+    return {"status": "healthy"}

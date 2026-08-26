@@ -179,3 +179,65 @@ FastAPI Swagger UI:
 
 - The app is intentionally kept Phase 1 only.
 - The backend is structured so PostgreSQL and richer source integrations can be added later without rebuilding the project.
+
+## DevOps Setup
+
+The project includes a Docker Compose deployment and GitHub Actions CI/CD pipeline without changing the existing application architecture.
+
+```text
+Developer -> GitHub Repository -> GitHub Actions
+							  -> Frontend build
+							  -> Backend validation
+							  -> Compose validation
+							  -> Docker image build and GHCR push
+```
+
+### Run with Docker Compose
+
+Copy `.env.example` to `.env` and replace `SECRET_KEY` for anything beyond a local demo. Then run:
+
+```bash
+docker compose up --build
+```
+
+The frontend is available at http://localhost:8080 and proxies `/api` requests to the backend. The backend is also available at http://localhost:8000, with a public health check at `/health`.
+
+Useful commands:
+
+```bash
+docker compose logs -f
+docker compose down
+docker compose up --build
+```
+
+SQLite data is stored in the named `backend-data` volume. No PostgreSQL or Redis service is required.
+
+To run the published GHCR images, copy `.env.example` to `.env`, verify `GHCR_OWNER=kartik-015` and `GHCR_REPOSITORY=sgp-7th-sem`, authenticate with `docker login ghcr.io`, then run:
+
+```bash
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+```
+
+### Troubleshooting Docker
+
+If Docker reports `dockerDesktopLinuxEngine` or `Docker Desktop Linux engine` is unavailable, start Docker Desktop and wait until its status says it is running. Verify it with:
+
+```bash
+docker info
+```
+
+The error `http: server gave HTTP response to HTTPS client` indicates a Docker Desktop proxy or registry configuration problem, not an application error. Check Docker Desktop Settings > Resources > Proxies, disable an incorrect proxy, and retry `docker pull nginx:1.27-alpine`. For GHCR, `denied` means the image is private or the namespace/tag is wrong; use the repository values from `.env` and authenticate with `docker login ghcr.io`.
+
+### GitHub Actions and GHCR
+
+The workflow in `.github/workflows/ci.yml` runs for pull requests and pushes to `main`. It installs frontend dependencies, builds the Vite app, installs backend dependencies, compiles the FastAPI application, validates Compose, and builds both Docker images. Pull requests build without pushing; pushes to `main` publish images to GHCR using the repository's automatic `GITHUB_TOKEN`.
+
+Images are published as:
+
+```text
+ghcr.io/<owner>/<repository>-frontend
+ghcr.io/<owner>/<repository>-backend
+```
+
+The workflow adds `latest` on the default branch and a `sha-<commit>` tag. GHCR package names are normalized to lowercase by Docker metadata. To use published images, authenticate to GHCR, pull the desired tags, and run Compose with matching image references in your deployment environment. The repository Actions workflow must retain `contents: read` and `packages: write` permissions; package visibility can be adjusted in GitHub under the published package settings.

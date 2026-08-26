@@ -1,0 +1,40 @@
+services:
+  backend:
+    image: ghcr.io/${GHCR_OWNER:?Set GHCR_OWNER}/${GHCR_REPOSITORY:?Set GHCR_REPOSITORY}-backend:${IMAGE_TAG:-latest}
+    environment:
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY}
+      ALGORITHM: ${ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-60}
+      DATABASE_URL: ${DATABASE_URL:-sqlite:////app/data/cyber_threat_intel.db}
+      VIRUSTOTAL_API_KEY: ${VIRUSTOTAL_API_KEY:-}
+      ABUSEIPDB_API_KEY: ${ABUSEIPDB_API_KEY:-}
+      OTX_API_KEY: ${OTX_API_KEY:-}
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    volumes:
+      - backend-data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  frontend:
+    image: ghcr.io/${GHCR_OWNER:?Set GHCR_OWNER}/${GHCR_REPOSITORY:?Set GHCR_REPOSITORY}-frontend:${IMAGE_TAG:-latest}
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+
+volumes:
+  backend-data:
