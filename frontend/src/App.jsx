@@ -10,6 +10,7 @@ import ThreatExplorerPage from './pages/ThreatExplorerPage'
 import SearchPage from './pages/SearchPage'
 import AlertsPage from './pages/AlertsPage'
 import ProfilePage from './pages/ProfilePage'
+import AdminPage from './pages/AdminPage'
 import { AnimatePresence, motion } from 'framer-motion'
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
           <Route path="search" element={<SearchPage />} />
           <Route path="alerts" element={<AlertsPage />} />
           <Route path="profile" element={<ProfilePage />} />
+          <Route path="admin" element={<AdminPage />} />
         </Route>
         <Route path="*" element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />} />
       </Routes>

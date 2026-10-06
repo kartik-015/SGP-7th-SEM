@@ -6,10 +6,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.alerts import router as alerts_router
+from app.api.admin import router as admin_router
 from app.api.auth import router as auth_router
 from app.api.dashboard import router as dashboard_router
 from app.api.search import router as search_router
 from app.api.threats import router as threats_router
+from app.api.exports import router as exports_router
 from app.core.config import settings
 from app.database.database import SessionLocal, init_db
 from app.utils.seed_data import seed_all
@@ -41,6 +43,8 @@ app.include_router(dashboard_router)
 app.include_router(threats_router)
 app.include_router(search_router)
 app.include_router(alerts_router)
+app.include_router(admin_router)
+app.include_router(exports_router)
 
 
 @app.get("/")

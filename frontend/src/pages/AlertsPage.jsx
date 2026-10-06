@@ -31,9 +31,17 @@ function AlertsPage() {
   }, [])
 
   const reviewAlert = async (id) => {
-    await api.put(`/alerts/${id}/review`)
-    toast.success('Alert marked as reviewed')
-    await loadAlerts()
+    await updateStatus(id, 'Reviewed')
+  }
+
+  const updateStatus = async (id, status) => {
+    try {
+      await api.put(`/alerts/${id}/status`, { status })
+      toast.success(`Alert marked ${status.toLowerCase()}`)
+      await loadAlerts()
+    } catch (requestError) {
+      toast.error(requestError?.response?.data?.detail || 'Alert status could not be updated.')
+    }
   }
 
   return (
@@ -67,9 +75,13 @@ function AlertsPage() {
                 key: 'action',
                 label: 'Action',
                 render: (row) => (
-                  <button type="button" className="secondary-button small" onClick={() => reviewAlert(row.id)} disabled={row.status === 'Reviewed'}>
-                    {row.status === 'Reviewed' ? 'Reviewed' : 'Mark Reviewed'}
-                  </button>
+                  <select value={row.status} onChange={(event) => updateStatus(row.id, event.target.value)} aria-label={`Update status for ${row.ioc_value}`}>
+                    <option>New</option>
+                    <option>In Progress</option>
+                    <option>Reviewed</option>
+                    <option>Resolved</option>
+                    <option>False Positive</option>
+                  </select>
                 ),
               },
             ]}

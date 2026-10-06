@@ -29,6 +29,12 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
     return user
 
 
+def require_admin(current_user: User = Depends(get_current_user)) -> User:
+    if current_user.role != "Administrator":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Administrator access required")
+    return current_user
+
+
 @router.post("/register", response_model=TokenResponse)
 def register(payload: UserCreate, db: Session = Depends(get_db)):
     if payload.role not in {"Analyst", "Administrator"}:

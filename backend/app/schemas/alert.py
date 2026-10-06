@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class AlertRead(BaseModel):
@@ -20,3 +20,19 @@ class AlertRead(BaseModel):
 
 class AlertReviewResponse(BaseModel):
     message: str
+
+
+class AlertStatusUpdate(BaseModel):
+    status: str = Field(pattern="^(New|In Progress|Reviewed|Resolved|False Positive)$")
+
+
+class AuditLogRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    actor_id: int | None
+    action: str
+    entity_type: str
+    entity_id: str | None
+    details: dict
+    created_at: datetime

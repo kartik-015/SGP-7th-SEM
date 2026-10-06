@@ -3,13 +3,16 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useLocation, useOutlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import Topbar from './Topbar'
+import { useAuth } from '../context/AuthContext'
 
 function AppShell() {
+  const { user } = useAuth()
   const location = useLocation()
   const outlet = useOutlet()
+  const isAdmin = user?.role === 'Administrator'
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${isAdmin ? 'admin-mode' : 'analyst-mode'}`}>
       <Sidebar />
       <div className="app-main">
         <Topbar />

@@ -8,8 +8,10 @@ import SeverityBadge from '../components/SeverityBadge'
 import { getSeverityTone } from '../utils/severity'
 import LoadingSkeleton from '../components/LoadingSkeleton'
 import PageHeader from '../components/PageHeader'
+import { useAuth } from '../context/AuthContext'
 
 function DashboardPage() {
+  const { user } = useAuth()
   const [stats, setStats] = useState(null)
   const [severityData, setSeverityData] = useState([])
   const [iocTypeData, setIocTypeData] = useState([])
@@ -63,8 +65,8 @@ function DashboardPage() {
   return (
     <div className="page-stack">
       <PageHeader
-        title={`Good ${new Date().getHours() < 12 ? 'Morning' : new Date().getHours() < 18 ? 'Afternoon' : 'Evening'}, analyst`}
-        subtitle="Monitor and analyze your cybersecurity threat intelligence in one place."
+        title={`Welcome, ${user?.role === 'Administrator' ? 'admin' : 'analyst'}`}
+        subtitle={user?.role === 'Administrator' ? 'Oversee access, accountability, and the complete threat intelligence operation.' : 'Monitor and analyze your cybersecurity threat intelligence in one place.'}
       />
 
       {loading ? (

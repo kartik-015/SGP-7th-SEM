@@ -20,6 +20,20 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
 
+class AuditLog(Base):
+    __tablename__ = "audit_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    actor_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    action = Column(String(80), nullable=False, index=True)
+    entity_type = Column(String(50), nullable=False)
+    entity_id = Column(String(80), nullable=True)
+    details = Column(JSON, default=dict, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+
+    actor = relationship("User")
+
+
 class ThreatSource(Base):
     __tablename__ = "threat_sources"
 

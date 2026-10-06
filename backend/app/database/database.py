@@ -24,6 +24,6 @@ def get_db() -> Generator:
 
 
 def init_db() -> None:
-    from app.database.models import Alert, IOC, ThreatSource, User  # noqa: F401
+    from app.database.models import Alert, AuditLog, IOC, ThreatSource, User  # noqa: F401
 
     Base.metadata.create_all(bind=engine)

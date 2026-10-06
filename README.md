@@ -108,7 +108,7 @@ The React app will run at http://127.0.0.1:5173.
 
 ## Environment Variables
 
-Copy `backend/.env.example` to `.env` if you want to customize settings.
+For Docker Compose, copy `.env.example` to `.env`. The Compose file stores SQLite at `/app/data` inside the container. If you run FastAPI directly on Windows instead, use `DATABASE_URL=sqlite:///./cyber_threat_intel.db` so the local process can create the database beside the backend application.
 
 ```env
 SECRET_KEY=change-me-in-production
@@ -174,6 +174,17 @@ FastAPI Swagger UI:
 - CI/CD
 - Advanced RBAC
 - Retry mechanisms for scheduled ingestion
+
+## Phase 2 Features Implemented
+
+- Administrator-only user management with role and active-state controls
+- Role-based access enforcement for administrator endpoints
+- Alert lifecycle statuses: New, In Progress, Reviewed, Resolved, and False Positive
+- Audit logging for user and alert changes
+- Authenticated IOC CSV export from Threat Explorer
+- Docker-compatible SQLite persistence and local Windows SQLite guidance
+
+The remaining Phase 2 items that require separate credentials or infrastructure are external VirusTotal, AbuseIPDB, and OTX ingestion, scheduled background jobs, email delivery, PDF generation, and PostgreSQL deployment. They remain disabled by default so local development and CI do not depend on third-party services.
 
 ## Notes
 

@@ -32,6 +32,11 @@ class UserRead(BaseModel):
     is_active: bool
 
 
+class UserAdminUpdate(BaseModel):
+    role: str | None = None
+    is_active: bool | None = None
+
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"

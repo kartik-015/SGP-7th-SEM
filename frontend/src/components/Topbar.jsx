@@ -44,9 +44,9 @@ function Topbar() {
         <Menu size={18} />
       </button>
       <div>
-        <div className="eyebrow">Cyber Threat Intelligence</div>
-        <h1>Operational threat monitoring</h1>
-        <p>Consolidated intelligence, enrichment, and review workflows in one secure workspace</p>
+        <div className="eyebrow">{user?.role === 'Administrator' ? 'Security operations control' : 'Cyber threat intelligence'}</div>
+        <h1>{user?.role === 'Administrator' ? 'Governance and access control' : 'Operational threat monitoring'}</h1>
+        <p>{user?.role === 'Administrator' ? 'Manage people, permissions, and accountability across the intelligence workspace' : 'Consolidated intelligence, enrichment, and review workflows in one secure workspace'}</p>
       </div>
 
       <div className="topbar-meta">

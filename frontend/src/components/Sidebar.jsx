@@ -1,5 +1,5 @@
 import React from 'react'
-import { Activity, AlertTriangle, ChevronLeft, ChevronRight, FileSearch, LayoutDashboard, LogOut, Shield, UserRound } from 'lucide-react'
+import { Activity, AlertTriangle, ChevronLeft, ChevronRight, FileSearch, LayoutDashboard, LogOut, Shield, UserRound, UsersRound } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useUI } from '../context/UIContext'
@@ -23,7 +23,7 @@ function Sidebar() {
       <button type="button" className="mobile-sidebar-toggle" onClick={() => setMobileSidebarOpen(true)} aria-label="Open navigation">
         <LayoutDashboard size={18} />
       </button>
-      <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileSidebarOpen ? 'mobile-open' : ''}`}>
+      <aside className={`sidebar ${user?.role === 'Administrator' ? 'sidebar-admin' : 'sidebar-analyst'} ${collapsed ? 'collapsed' : ''} ${mobileSidebarOpen ? 'mobile-open' : ''}`}>
         <div className="sidebar-top">
           <button type="button" className="brand-block" onClick={() => navigate('/dashboard')} aria-label="Go to Dashboard">
             <div className="brand-mark">CI</div>
@@ -52,10 +52,10 @@ function Sidebar() {
         </nav>
 
         {user?.role === 'Administrator' && !collapsed && (
-          <div className="sidebar-admin-note">
-            <Activity size={16} />
-            <span>Admin access available in Phase 2</span>
-          </div>
+          <NavLink to="/admin" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={() => setMobileSidebarOpen(false)}>
+            <UsersRound size={18} />
+            <span>Admin Console</span>
+          </NavLink>
         )}
 
         <div className="sidebar-footer">
@@ -64,7 +64,7 @@ function Sidebar() {
             {!collapsed && (
               <div>
                 <strong>{user?.full_name}</strong>
-                <span>{user?.role}</span>
+                <span>{user?.role === 'Administrator' ? 'Operations administrator' : 'Threat analyst'}</span>
               </div>
             )}
           </div>

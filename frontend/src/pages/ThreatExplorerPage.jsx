@@ -71,6 +71,7 @@ function ThreatExplorerPage() {
       <PageHeader
         title="Threat Explorer"
         subtitle="Explore, filter, and analyze collected threat intelligence indicators."
+        actions={<button type="button" className="secondary-button" onClick={() => window.open('/api/exports/iocs.csv', '_blank')}>Export IOC CSV</button>}
       />
 
       <section className="panel">
