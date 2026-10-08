@@ -10,6 +10,7 @@ import subprocess
 import sys
 import urllib.request
 from datetime import datetime, timezone
+from urllib.parse import urlparse
 
 
 def post_event(api_url: str, agent_key: str, payload: dict) -> dict:
@@ -21,6 +22,18 @@ def post_event(api_url: str, agent_key: str, payload: dict) -> dict:
     )
     with urllib.request.urlopen(request, timeout=15) as response:
         return json.loads(response.read().decode("utf-8"))
+
+
+def get_source_address(api_url: str) -> str:
+    host = urlparse(api_url).hostname or "127.0.0.1"
+    probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        probe.connect((host, 8000))
+        return probe.getsockname()[0]
+    except OSError:
+        return socket.gethostbyname(socket.gethostname())
+    finally:
+        probe.close()
 
 
 def main() -> int:
@@ -42,7 +55,7 @@ def main() -> int:
         "username": os.getenv("USER") or os.getenv("USERNAME") or "unknown",
         "shell": os.getenv("SHELL") or os.getenv("ComSpec") or "unknown",
         "platform": platform.platform(),
-        "source_address": socket.gethostbyname(socket.gethostname()),
+        "source_address": get_source_address(args.api_url),
         "executed_at": datetime.now(timezone.utc).isoformat(),
         "exit_code": completed.returncode,
         "event_type": "command",

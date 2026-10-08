@@ -216,10 +216,28 @@ For a real network device, replace `127.0.0.1` with the Windows host LAN address
 Copy `telemetry-agent/telemetry_agent.py` to the authorized device. Python's standard library is sufficient:
 
 ```bash
-export CTI_API_URL=http://WINDOWS_HOST_IP:8000
-export TELEMETRY_AGENT_KEY=change-me-agent-key
+pkg update -y
+pkg install python -y
+export CTI_API_URL="http://WINDOWS_HOST_IP:8000"
+export TELEMETRY_AGENT_KEY="change-me-agent-key"
 python3 telemetry_agent.py -- whoami
 ```
+
+Run each `export` command separately. Do not paste the three commands together without line breaks. On Windows, find `WINDOWS_HOST_IP` with `ipconfig`; it is the IPv4 address of the Wi-Fi adapter, for example `192.168.1.100`. The phone and Windows computer must be on the same Wi-Fi network. Windows Firewall must allow inbound TCP port 8000 for Python/Docker on that private network.
+
+To copy the agent from Windows to a phone with Termux, use a USB/file-sharing method or a private repository, then place it in Termux's home directory. From Termux, confirm connectivity before running the agent:
+
+```bash
+curl http://WINDOWS_HOST_IP:8000/health
+```
+
+The response must be `{"status":"healthy"}`. Then send a harmless command:
+
+```bash
+python3 telemetry_agent.py -- whoami
+```
+
+Open the dashboard at `http://localhost:8080`, select **Host Telemetry**, and the new phone event will appear automatically within five seconds.
 
 The agent prints the command output and the backend's detection response. Use a controlled demonstration command only, such as:
 
