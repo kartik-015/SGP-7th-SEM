@@ -18,6 +18,7 @@ class Settings:
     virus_total_api_key: str = os.getenv("VIRUSTOTAL_API_KEY", "")
     abuse_ipdb_api_key: str = os.getenv("ABUSEIPDB_API_KEY", "")
     otx_api_key: str = os.getenv("OTX_API_KEY", "")
+    telemetry_agent_key: str = os.getenv("TELEMETRY_AGENT_KEY", "change-me-agent-key")
     app_name: str = "Cyber Threat Intelligence Dashboard"
 
 

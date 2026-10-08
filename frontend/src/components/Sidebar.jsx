@@ -9,6 +9,7 @@ const navItems = [
   { to: '/threats', label: 'Threat Explorer', icon: Shield },
   { to: '/search', label: 'IOC Search', icon: FileSearch },
   { to: '/alerts', label: 'Alerts', icon: AlertTriangle },
+  { to: '/telemetry', label: 'Host Telemetry', icon: Activity },
   { to: '/profile', label: 'Profile', icon: UserRound },
 ]
 

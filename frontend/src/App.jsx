@@ -11,6 +11,7 @@ import SearchPage from './pages/SearchPage'
 import AlertsPage from './pages/AlertsPage'
 import ProfilePage from './pages/ProfilePage'
 import AdminPage from './pages/AdminPage'
+import TelemetryPage from './pages/TelemetryPage'
 import { AnimatePresence, motion } from 'framer-motion'
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
           <Route path="alerts" element={<AlertsPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="admin" element={<AdminPage />} />
+          <Route path="telemetry" element={<TelemetryPage />} />
         </Route>
         <Route path="*" element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />} />
       </Routes>

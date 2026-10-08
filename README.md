@@ -195,6 +195,40 @@ The remaining Phase 2 items that require separate credentials or infrastructure 
 
 The project includes a Docker Compose deployment and GitHub Actions CI/CD pipeline without changing the existing application architecture.
 
+## Real-Time Host Telemetry
+
+The dashboard now supports authorized command telemetry from Kali Linux, Android Termux, and other devices on the same network. The included `telemetry-agent/telemetry_agent.py` executes a locally authorized command, collects the command, device, user, shell, platform, source address, timestamp, and exit status, and sends the event to the FastAPI backend over HTTP JSON.
+
+The backend requires the `X-Agent-Key` header, validates the payload with Pydantic, stores it in SQLite, and applies rule-based detections for network scanning, credential attacks, privilege escalation, dangerous file operations, and account changes. A detected command becomes a telemetry threat with a risk score and severity, and an IOC plus alert is created for review. Normal commands are stored as low-risk telemetry events.
+
+### Configure the agent
+
+Set the same key in the root `.env` used by Docker:
+
+```env
+TELEMETRY_AGENT_KEY=change-me-agent-key
+```
+
+For a real network device, replace `127.0.0.1` with the Windows host LAN address and use the published backend port `8000`. Only monitor devices and commands you are authorized to monitor, and do not log passwords, private keys, tokens, or other secrets.
+
+### Run an agent on Kali Linux or Termux
+
+Copy `telemetry-agent/telemetry_agent.py` to the authorized device. Python's standard library is sufficient:
+
+```bash
+export CTI_API_URL=http://WINDOWS_HOST_IP:8000
+export TELEMETRY_AGENT_KEY=change-me-agent-key
+python3 telemetry_agent.py -- whoami
+```
+
+The agent prints the command output and the backend's detection response. Use a controlled demonstration command only, such as:
+
+```bash
+python3 telemetry_agent.py -- nmap -sV 10.0.0.1
+```
+
+The command is executed locally on the authorized source device; the dashboard receives only the resulting telemetry metadata. Open **Host Telemetry** in the dashboard to review events. The detected command also appears in **Threat Explorer** and **Alerts**.
+
 ```text
 Developer -> GitHub Repository -> GitHub Actions
 							  -> Frontend build

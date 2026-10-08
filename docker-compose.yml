@@ -11,6 +11,7 @@ services:
       VIRUSTOTAL_API_KEY: ${VIRUSTOTAL_API_KEY:-}
       ABUSEIPDB_API_KEY: ${ABUSEIPDB_API_KEY:-}
       OTX_API_KEY: ${OTX_API_KEY:-}
+      TELEMETRY_AGENT_KEY: ${TELEMETRY_AGENT_KEY:-change-me-agent-key}
     ports:
       - "${BACKEND_PORT:-8000}:8000"
     volumes:

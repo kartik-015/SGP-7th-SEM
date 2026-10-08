@@ -34,6 +34,26 @@ class AuditLog(Base):
     actor = relationship("User")
 
 
+class TelemetryEvent(Base):
+    __tablename__ = "telemetry_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    command = Column(Text, nullable=False)
+    device_name = Column(String(120), nullable=False, index=True)
+    username = Column(String(120), nullable=False)
+    shell = Column(String(80), nullable=False, default="unknown")
+    platform = Column(String(80), nullable=False, default="unknown")
+    source_address = Column(String(80), nullable=False, index=True)
+    executed_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+    exit_code = Column(Integer, nullable=False, default=0)
+    success = Column(Boolean, nullable=False, default=True)
+    event_type = Column(String(40), nullable=False, default="command")
+    detection_name = Column(String(120), nullable=True)
+    detection_reason = Column(Text, nullable=True)
+    severity = Column(String(20), nullable=False, default="Low", index=True)
+    risk_score = Column(Float, nullable=False, default=0.0)
+
+
 class ThreatSource(Base):
     __tablename__ = "threat_sources"
 
